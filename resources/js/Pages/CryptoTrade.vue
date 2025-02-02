@@ -21,39 +21,24 @@ const loadCandles = async () => {
     });
 
     return response.data.map(c => ({
-        x: c.period * 1000,//new Date(c.period * 1000), // Convertir le timestamp en objet Date
+        x: c.period * 1000,
         o: parseFloat(c.open),       // Prix d'ouverture
         h: parseFloat(c.high),       // Prix le plus haut
         l: parseFloat(c.low),        // Prix le plus bas
         c: parseFloat(c.close)       // Prix de clôture
-    }));
-};
-
-
-/*
-const currentPrice = computed(() => {
-    if (candles.value.length === 0) return 0;
-    return candles.value[candles.value.length - 1].c;
-});
-
- */
-
-
+    }))
+}
 
 onMounted(async () => {
-    await nextTick(); // Attendre que le DOM soit rendu
+    await nextTick();
 
     if (!chartCanvas.value) {
         console.error("❌ Le canvas Chart.js n'est pas disponible !");
         return;
     }
 
-    // 🟢 Charger l'historique des bougies au démarrage
     candles.value = await loadCandles();
 
-    console.log("Données envoyées au graphique :", candles.value);
-
-    // 🟢 Initialiser Chart.js avec ces bougies
     chart = new Chart(chartCanvas.value, {
         type: 'candlestick', // Type de graphique
         data: {
@@ -66,15 +51,13 @@ onMounted(async () => {
                     down: 'red', // Bougies baissières
                     unchanged: 'gray'
                 },
-                //barPercentage: 0.6,
-                //categoryPercentage: 0.8
             }]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    display: false // Désactiver la légende
+                    display: false
                 }
             },
             scales: {
@@ -84,7 +67,7 @@ onMounted(async () => {
                         unit: 'minute',
                         stepSize: 15,
                         displayFormats: {
-                            minute: 'HH:mm'
+                            minute: 'HH'
                         }
                     },
                     ticks: {
@@ -99,26 +82,25 @@ onMounted(async () => {
                         sampleSize: 100
                     },
                     grid: {
-                        color: '#131313' // Couleur de la grille (lignes) de l'axe X
+                        color: '#131313'
                     }
                 },
                 y: {
                     type: 'linear',
                     ticks: {
-                        color: '#ffffff' // Couleur des ticks (étiquettes) de l'axe Y
+                        color: '#ffffff'
                     },
                     grid: {
-                        color: '#131313' // Couleur de la grille (lignes) de l'axe Y
+                        color: '#131313'
                     }
                 }
             },
             layout: {
-                backgroundColor: '#000000' // Fond du graphique (noir)
+                backgroundColor: '#000000'
             }
         }
     });
 
-    // 📡 Écouter les mises à jour en temps réel via WebSocket
     const echo = new Echo({
         broadcaster: 'reverb',
         key: import.meta.env.VITE_REVERB_APP_KEY,
@@ -145,17 +127,16 @@ onMounted(async () => {
                         currentPriceColor.value = 'red'
                     }
                 }
-            }, 1500); // Limite à une mise à jour toutes les 500 ms
+            }, 1500)
         }
     };
 
     echo.channel('crypto-trades')
         .listen('.bitcoin.trade.updated', (data) => {
-            const lastCandle = candles.value[candles.value.length - 1];
+            const lastCandle = candles.value[candles.value.length - 1]
 
-            // Convertir le timestamp en entier Unix (millisecondes)
-            const tradeTime = Date.parse(data.trade.timestamp); // Convertit "2025-02-02 15:18:33" en millisecondes
-            const tradePrice = parseFloat(data.trade.price);
+            const tradeTime = Date.parse(data.trade.timestamp)
+            const tradePrice = parseFloat(data.trade.price)
 
             // Vérifie si le trade appartient à la période de la dernière bougie
             if (tradeTime >= lastCandle.x && tradeTime < lastCandle.x + 15 * 60 * 1000) {
@@ -194,7 +175,6 @@ onMounted(async () => {
                 :duration="200"
             />
         </div>
-
         <canvas ref="chartCanvas" style="width: 100%; height: 100%"></canvas>
     </div>
 </template>
