@@ -16,16 +16,26 @@ class CalculateCryptoCandles extends Command
         $interval = $this->option('interval');
         $cryptoTypes = CryptoType::cases(); // Récupère tous les types de cryptos définis dans l'enum
 
+        // Supprime toutes les bougies existantes (optionnel pour reset)
+        DB::table('crypto_candles')->truncate();
+        $this->info("Toutes les bougies ont été supprimées. Recalcul en cours...");
+
         foreach ($cryptoTypes as $cryptoType) {
             $this->info("Calcul des bougies pour {$cryptoType->name} avec un intervalle de {$interval} minutes...");
 
-            // Récupérer la dernière période calculée
+            // Récupérer la dernière période calculée en base
             $lastPeriod = $this->getLastPeriod($cryptoType->value);
 
-            // Si aucune bougie n'existe encore, calculer les dernières 24 heures
-            $startTime = $lastPeriod ?: now()->subHours(24)->timestamp;
+            if ($lastPeriod) {
+                // Si on a déjà des bougies, commence après la dernière période enregistrée
+                $startTime = $lastPeriod + ($interval * 60);
+            } else {
+                // Si aucune bougie n'existe encore, on démarre il y a 24h en arrondissant à un quart d'heure
+                $now = time();
+                $startTime = floor($now / ($interval * 60)) * ($interval * 60) - (24 * 60 * 60);
+            }
 
-            // Requête pour les nouvelles données
+            // Requête SQL optimisée
             $query = sprintf("
                 WITH grouped_trades AS (
                     SELECT
@@ -34,7 +44,7 @@ class CalculateCryptoCandles extends Command
                         MAX(price) AS high
                     FROM crypto_trades
                     WHERE crypto_type = %d
-                    AND timestamp >= FROM_UNIXTIME(%d) -- Filtrer uniquement les nouvelles périodes
+                    AND timestamp >= FROM_UNIXTIME(%d)
                     GROUP BY period
                 ),
                 first_and_last AS (
@@ -51,7 +61,7 @@ class CalculateCryptoCandles extends Command
                         ) AS close
                     FROM crypto_trades
                     WHERE crypto_type = %d
-                    AND timestamp >= FROM_UNIXTIME(%d) -- Filtrer uniquement les nouvelles périodes
+                    AND timestamp >= FROM_UNIXTIME(%d)
                 )
                 SELECT
                     g.period,
