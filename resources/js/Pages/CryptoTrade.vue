@@ -190,7 +190,6 @@ onMounted(async () => {
                     l: tradePrice,
                     c: tradePrice
                 }];
-                candles.value.shift()
                 chart.data.datasets[0].data = candles.value;
 
             }
