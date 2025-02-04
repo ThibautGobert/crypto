@@ -22,7 +22,7 @@ class BitcoinTradeUpdated implements ShouldBroadcast
     public function __construct(
         public CryptoTrade $trade
     ) {
-
+        $this->trade->append('periode');
     }
 
     /**
