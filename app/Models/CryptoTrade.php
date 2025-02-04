@@ -20,19 +20,19 @@ class CryptoTrade extends Model
         'timestamp' => 'datetime'
     ];
 
-    protected $appends = ['periode'];
+    protected $appends = ['period'];
 
 
-    public function getPeriode(int $interval)
+    public function getPeriod(int $interval)
     {
         return floor($this->timestamp->timestamp / ($interval * 60)) * ($interval * 60);
     }
 
-    public function periode(): Attribute
+    public function period(): Attribute
     {
         return Attribute::make(
             get: function() {
-                return $this->getPeriode(15);
+                return $this->getPeriod(15);
             }
         );
     }
