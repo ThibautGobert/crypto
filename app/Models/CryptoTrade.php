@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CryptoType;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,5 +17,23 @@ class CryptoTrade extends Model
 
     protected $casts = [
         'crypto_type' => CryptoType::class,
+        'timestamp' => 'datetime'
     ];
+
+    protected $appends = ['periode'];
+
+
+    public function getPeriode(int $interval)
+    {
+        return floor($this->timestamp->timestamp / ($interval * 60)) * ($interval * 60);
+    }
+
+    public function periode(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                return $this->getPeriode(15);
+            }
+        );
+    }
 }

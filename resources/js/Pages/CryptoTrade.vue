@@ -169,11 +169,11 @@ onMounted(async () => {
         .listen('.bitcoin.trade.updated', (data) => {
             const lastCandle = candles.value[candles.value.length - 1]
 
-            const tradeTime = Date.parse(data.trade.timestamp)
-            const tradePrice = parseFloat(data.trade.price)
+            const tradePeriod = data.trade.period * 1000;
+            const tradePrice = parseFloat(data.trade.price);
 
             // Vérifie si le trade appartient à la période de la dernière bougie
-            if (tradeTime >= lastCandle.x && tradeTime < lastCandle.x + 15 * 60 * 1000) {
+            if (tradePeriod >= lastCandle.x && tradePeriod < lastCandle.x + 15 * 60 * 1000) {
                 const updatedCandle = {
                     ...lastCandle,
                     h: Math.max(lastCandle.h, tradePrice),
@@ -182,16 +182,20 @@ onMounted(async () => {
                 };
                 candles.value[candles.value.length - 1] = updatedCandle;
             } else {
+                // Créer une nouvelle bougie correctement alignée
                 candles.value = [...candles.value, {
-                    x: tradeTime,
+                    x: tradePeriod,
                     o: tradePrice,
                     h: tradePrice,
                     l: tradePrice,
                     c: tradePrice
-                }]
+                }];
+                candles.value.shift()
                 chart.data.datasets[0].data = candles.value;
+
             }
-            throttledChartUpdate()
+
+            throttledChartUpdate();
         });
 
 });
