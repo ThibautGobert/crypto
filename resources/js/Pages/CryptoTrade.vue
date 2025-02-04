@@ -195,10 +195,11 @@ onMounted(async () => {
                 if (oldestCandleTime < twentyFourHoursAgo) {
                     candles.value.shift(); // 🔥 Supprime la première bougie
                 }
+                // ✅ Mise à jour du dataset SANS écraser les anciennes données
+                chart.data.datasets[0].data = candles.value;
             }
 
-            // ✅ Mise à jour du dataset SANS écraser les anciennes données
-            chart.data.datasets[0].data = candles.value;
+
             throttledChartUpdate();
         });
 
