@@ -167,40 +167,38 @@ onMounted(async () => {
 
     echo.channel('crypto-trades')
         .listen('.bitcoin.trade.updated', (data) => {
-            const lastCandle = candles.value[candles.value.length - 1];
-
-            const tradePeriod = data.trade.period * 1000;
+            const tradePeriod = data.trade.period * 1000; // ✅ Période alignée avec la DB
             const tradePrice = parseFloat(data.trade.price);
 
-            // Vérifie si le trade appartient à la période de la dernière bougie
-            if (tradePeriod >= lastCandle.x && tradePeriod < lastCandle.x + 15 * 60 * 1000) {
-                const updatedCandle = {
-                    ...lastCandle,
-                    h: Math.max(lastCandle.h, tradePrice),
-                    l: Math.min(lastCandle.l, tradePrice),
-                    c: tradePrice
-                };
-                candles.value[candles.value.length - 1] = updatedCandle;
+            // Vérifie si une bougie pour cette période existe déjà
+            const lastCandleIndex = candles.value.findIndex(c => c.x === tradePeriod);
+
+            if (lastCandleIndex !== -1) {
+                // 🟢 Mettre à jour la dernière bougie
+                candles.value[lastCandleIndex].h = Math.max(candles.value[lastCandleIndex].h, tradePrice);
+                candles.value[lastCandleIndex].l = Math.min(candles.value[lastCandleIndex].l, tradePrice);
+                candles.value[lastCandleIndex].c = tradePrice;
             } else {
-                // Créer une nouvelle bougie correctement alignée
-                candles.value = [...candles.value, {
-                    x: tradePeriod,
+                // 🔴 Ajouter une nouvelle bougie
+                candles.value.push({
+                    x: tradePeriod, // ✅ Nouvelle période bien alignée
                     o: tradePrice,
                     h: tradePrice,
                     l: tradePrice,
                     c: tradePrice
-                }];
-                chart.data.datasets[0].data = candles.value;
+                });
 
-                // ✅ Supprimer uniquement si la première bougie a plus de 24h
+                // 🟢 Vérifier si la première bougie est hors des 24h et la supprimer
                 const oldestCandleTime = candles.value[0].x;
                 const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
 
                 if (oldestCandleTime < twentyFourHoursAgo) {
-                    candles.value.shift(); // 🔥 Supprime uniquement si nécessaire
+                    candles.value.shift(); // 🔥 Supprime la première bougie
                 }
             }
 
+            // ✅ Mise à jour du dataset SANS écraser les anciennes données
+            chart.data.datasets[0].data = candles.value;
             throttledChartUpdate();
         });
 
