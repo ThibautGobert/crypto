@@ -6,4 +6,4 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 
-Schedule::command(CalculateCryptoCandles::class, ['--interval=15'])->everyFiveMinutes();
+Schedule::command(CalculateCryptoCandles::class, ['--interval=15'])->everyMinute();
