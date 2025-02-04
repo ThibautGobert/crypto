@@ -167,7 +167,7 @@ onMounted(async () => {
 
     echo.channel('crypto-trades')
         .listen('.bitcoin.trade.updated', (data) => {
-            const lastCandle = candles.value[candles.value.length - 1]
+            const lastCandle = candles.value[candles.value.length - 1];
 
             const tradePeriod = data.trade.period * 1000;
             const tradePrice = parseFloat(data.trade.price);
@@ -192,6 +192,13 @@ onMounted(async () => {
                 }];
                 chart.data.datasets[0].data = candles.value;
 
+                // ✅ Supprimer uniquement si la première bougie a plus de 24h
+                const oldestCandleTime = candles.value[0].x;
+                const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
+
+                if (oldestCandleTime < twentyFourHoursAgo) {
+                    candles.value.shift(); // 🔥 Supprime uniquement si nécessaire
+                }
             }
 
             throttledChartUpdate();
