@@ -188,18 +188,20 @@ onMounted(async () => {
                     c: tradePrice
                 });
 
-                // 🟢 Vérifier si la première bougie est hors des 24h et la supprimer
+                /*
                 const oldestCandleTime = candles.value[0].x;
                 const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
 
                 if (oldestCandleTime < twentyFourHoursAgo) {
                     candles.value.shift(); // 🔥 Supprime la première bougie
                 }
-                // ✅ Mise à jour du dataset SANS écraser les anciennes données
-                chart.data.datasets[0].data = candles.value;
+
+                 */
+
+
             }
 
-
+            chart.data.datasets[0].data = candles.value;
             throttledChartUpdate();
         });
 
