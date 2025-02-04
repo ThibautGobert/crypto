@@ -167,6 +167,7 @@ onMounted(async () => {
 
     echo.channel('crypto-trades')
         .listen('.bitcoin.trade.updated', (data) => {
+            console.log(data)
             const tradePeriod = data.trade.period * 1000; // ✅ Période alignée avec la DB
             const tradePrice = parseFloat(data.trade.price);
             console.log(tradePeriod)
