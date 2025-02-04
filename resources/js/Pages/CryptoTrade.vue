@@ -169,9 +169,12 @@ onMounted(async () => {
         .listen('.bitcoin.trade.updated', (data) => {
             const tradePeriod = data.trade.period * 1000; // ✅ Période alignée avec la DB
             const tradePrice = parseFloat(data.trade.price);
+            console.log(tradePeriod)
+            console.log(tradePrice)
 
             // Vérifie si une bougie pour cette période existe déjà
             const lastCandleIndex = candles.value.findIndex(c => c.x === tradePeriod);
+            console.log(lastCandleIndex)
 
             if (lastCandleIndex !== -1) {
                 // 🟢 Mettre à jour la dernière bougie
