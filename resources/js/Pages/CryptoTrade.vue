@@ -169,6 +169,7 @@ onMounted(async () => {
         .listen('.bitcoin.trade.updated', (data) => {
             const tradePeriod = data.trade.period * 1000; // ✅ Période alignée avec la DB
             const tradePrice = parseFloat(data.trade.price);
+
             // Vérifie si une bougie pour cette période existe déjà
             const lastCandleIndex = candles.value.findIndex(c => c.x === tradePeriod);
 
@@ -186,18 +187,23 @@ onMounted(async () => {
                     l: tradePrice,
                     c: tradePrice
                 });
-                /*
-                const oldestCandleTime = candles.value[0].x;
-                const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
 
-                if (oldestCandleTime < twentyFourHoursAgo) {
-                    candles.value.shift();
+                // ✅ Vérification avant de supprimer une bougie
+                if (candles.value.length > 1) { // Vérifie qu'il y a au moins une bougie avant d'y accéder
+                    const oldestCandleTime = candles.value[0]?.x;
+                    const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
+
+                    if (oldestCandleTime && oldestCandleTime < twentyFourHoursAgo) {
+                        candles.value.shift();
+                    }
                 }
-
-                 */
             }
-            chart.data.datasets[0].data = candles.value;
-            throttledChartUpdate();
+
+            // ✅ Vérifier que candles.value n'est pas vide avant d'affecter les données au graphique
+            if (candles.value.length > 0) {
+                chart.data.datasets[0].data = [...candles.value]; // Clonage pour éviter les problèmes de réactivité
+                throttledChartUpdate();
+            }
         });
 
 });
