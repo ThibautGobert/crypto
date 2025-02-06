@@ -187,9 +187,11 @@ onMounted(async () => {
                     l: tradePrice,
                     c: tradePrice
                 });
+                candles.value.shift()
 
                 // ✅ Vérification avant de supprimer une bougie
-                if (candles.value.length > 1) { // Vérifie qu'il y a au moins une bougie avant d'y accéder
+                /*
+                if (candles.value.length > 1) {
                     const oldestCandleTime = candles.value[0]?.x;
                     const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
 
@@ -197,6 +199,8 @@ onMounted(async () => {
                         candles.value.shift();
                     }
                 }
+
+                 */
             }
 
             // ✅ Vérifier que candles.value n'est pas vide avant d'affecter les données au graphique
