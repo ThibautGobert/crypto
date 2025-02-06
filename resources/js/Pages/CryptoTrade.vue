@@ -186,13 +186,15 @@ onMounted(async () => {
                     l: tradePrice,
                     c: tradePrice
                 });
-
+                /*
                 const oldestCandleTime = candles.value[0].x;
                 const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
 
                 if (oldestCandleTime < twentyFourHoursAgo) {
-                    candles.value.shift(); 
+                    candles.value.shift();
                 }
+
+                 */
             }
             chart.data.datasets[0].data = candles.value;
             throttledChartUpdate();
