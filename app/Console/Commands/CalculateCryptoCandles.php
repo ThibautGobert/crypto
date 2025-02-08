@@ -16,10 +16,6 @@ class CalculateCryptoCandles extends Command
         $interval = $this->option('interval');
         $cryptoTypes = CryptoType::cases(); // Récupère tous les types de cryptos définis dans l'enum
 
-        // Supprime toutes les bougies existantes (optionnel pour reset)
-        DB::table('crypto_candles')->truncate();
-        $this->info("Toutes les bougies ont été supprimées. Recalcul en cours...");
-
         foreach ($cryptoTypes as $cryptoType) {
             $this->info("Calcul des bougies pour {$cryptoType->name} avec un intervalle de {$interval} minutes...");
 
