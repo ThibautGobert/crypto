@@ -5,6 +5,7 @@ import 'chartjs-adapter-date-fns'; // Gestion des dates pour l'axe X
 import { CandlestickController, CandlestickElement  } from 'chartjs-chart-financial';
 import Echo from 'laravel-echo';
 import axios from 'axios';
+import CurrentDateTime from '@/Components/CurrentDateTime.vue';
 
 // 🛠️ Enregistrer les composants de Chart.js
 Chart.register(CandlestickController, CandlestickElement );
@@ -53,13 +54,6 @@ const handleFullscreenChange = ()=> {
         isFullScreen.value = false
     }
 }
-
-const resizeChart = () => {
-    if (chart) {
-        console.log('resize chart')
-        chart.resize();
-    }
-};
 
 onMounted(async () => {
     await nextTick();
@@ -150,15 +144,16 @@ onMounted(async () => {
     const throttledChartUpdate = () => {
         if (!updateTimeout) {
             updateTimeout = setTimeout(() => {
-                chart.update();
                 updateTimeout = null;
                 if (candles.value.length > 0) {
                     let lastPrice = currentPrice.value
                     currentPrice.value =  candles.value[candles.value.length - 1].c
                     if(currentPrice.value > lastPrice) {
                         currentPriceColor.value = 'green'
-                    } else {
+                    } else if(currentPrice.value < lastPrice) {
                         currentPriceColor.value = 'red'
+                    } else {
+                        currentPriceColor.value = 'white'
                     }
                 }
             }, 1500)
@@ -170,43 +165,27 @@ onMounted(async () => {
             const tradePeriod = data.trade.period * 1000; // ✅ Période alignée avec la DB
             const tradePrice = parseFloat(data.trade.price);
 
-            // Vérifie si une bougie pour cette période existe déjà
             const lastCandleIndex = candles.value.findIndex(c => c.x === tradePeriod);
 
             if (lastCandleIndex !== -1) {
-                // 🟢 Mettre à jour la dernière bougie
                 candles.value[lastCandleIndex].h = Math.max(candles.value[lastCandleIndex].h, tradePrice);
                 candles.value[lastCandleIndex].l = Math.min(candles.value[lastCandleIndex].l, tradePrice);
                 candles.value[lastCandleIndex].c = tradePrice;
             } else {
-                // 🔴 Ajouter une nouvelle bougie
                 candles.value.push({
-                    x: tradePeriod, // ✅ Nouvelle période bien alignée
+                    x: tradePeriod,
                     o: tradePrice,
                     h: tradePrice,
                     l: tradePrice,
                     c: tradePrice
                 });
                 candles.value.shift()
-
-                // ✅ Vérification avant de supprimer une bougie
-                /*
-                if (candles.value.length > 1) {
-                    const oldestCandleTime = candles.value[0]?.x;
-                    const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
-
-                    if (oldestCandleTime && oldestCandleTime < twentyFourHoursAgo) {
-                        candles.value.shift();
-                    }
-                }
-
-                 */
             }
 
-            // ✅ Vérifier que candles.value n'est pas vide avant d'affecter les données au graphique
             if (candles.value.length > 0) {
-                chart.data.datasets[0].data = [...candles.value]; // Clonage pour éviter les problèmes de réactivité
-                throttledChartUpdate();
+                chart.data.datasets[0].data = [...candles.value];
+                chart.update();
+                throttledPriceUpdate();
             }
         });
 
@@ -218,16 +197,21 @@ onMounted(async () => {
         <div v-if="!isFullScreen" style="width: 30px; height: 30px; position: absolute;right: 5px;bottom:5px;cursor:pointer;" @click="toggleFullScreen">
             <svg style="fill: white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M200 32L56 32C42.7 32 32 42.7 32 56l0 144c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l40-40 79 79-79 79L73 295c-6.9-6.9-17.2-8.9-26.2-5.2S32 302.3 32 312l0 144c0 13.3 10.7 24 24 24l144 0c9.7 0 18.5-5.8 22.2-14.8s1.7-19.3-5.2-26.2l-40-40 79-79 79 79-40 40c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8l144 0c13.3 0 24-10.7 24-24l0-144c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2l-40 40-79-79 79-79 40 40c6.9 6.9 17.2 8.9 26.2 5.2s14.8-12.5 14.8-22.2l0-144c0-13.3-10.7-24-24-24L312 32c-9.7 0-18.5 5.8-22.2 14.8s-1.7 19.3 5.2 26.2l40 40-79 79-79-79 40-40c6.9-6.9 8.9-17.2 5.2-26.2S209.7 32 200 32z"/></svg>
         </div>
-        <div style="width: 300px;position:absolute;top:0;right: 0; text-align: right;" :style="{color: currentPriceColor}">
-            <digit-animation-group
-                v-if="currentPrice"
-                size="3em"
-                format="00000.00"
-                use-ease="Quit.easeInOut"
-                stagger
-                :digits="currentPrice"
-                :duration="200"
-            />
+        <div>
+            <div style="width: 300px;position:absolute;top:0;right: 0;">
+                <div :style="{color: currentPriceColor}" style="text-align: right;">
+                    <digit-animation-group
+                        v-if="currentPrice"
+                        size="3em"
+                        format="00000.00"
+                        use-ease="Quit.easeInOut"
+                        stagger
+                        :digits="currentPrice"
+                        :duration="200"
+                    />
+                </div>
+            </div>
+            <current-date-time style="color: white;"></current-date-time>
         </div>
         <canvas ref="chartCanvas" style="width: 100%; height: 100%"></canvas>
     </div>
