@@ -141,7 +141,7 @@ onMounted(async () => {
 
     let updateTimeout = null;
 
-    const throttledChartUpdate = () => {
+    const throttledPriceUpdate = () => {
         if (!updateTimeout) {
             updateTimeout = setTimeout(() => {
                 updateTimeout = null;
@@ -211,7 +211,7 @@ onMounted(async () => {
             </div>
             <current-date-time style="color: white;"></current-date-time>
         </div>
-        
+
         <canvas ref="chartCanvas" style="width: 100%; height: 100%"></canvas>
     </div>
 </template>
