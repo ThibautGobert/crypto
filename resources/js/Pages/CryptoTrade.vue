@@ -209,7 +209,7 @@ onMounted(async () => {
                     :duration="200"
                 />
             </div>
-            <current-date-time style="color: white;"></current-date-time>
+            <current-date-time style="color: white;text-align: right;"></current-date-time>
         </div>
 
         <canvas ref="chartCanvas" style="width: 100%; height: 100%"></canvas>
