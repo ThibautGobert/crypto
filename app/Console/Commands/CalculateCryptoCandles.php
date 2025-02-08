@@ -24,7 +24,7 @@ class CalculateCryptoCandles extends Command
 
             if ($lastPeriod) {
                 // Si on a déjà des bougies, commence après la dernière période enregistrée
-                $startTime = $lastPeriod + ($interval * 60);
+                $startTime = $lastPeriod;
             } else {
                 // Si aucune bougie n'existe encore, on démarre il y a 24h en arrondissant à un quart d'heure
                 $now = time();
