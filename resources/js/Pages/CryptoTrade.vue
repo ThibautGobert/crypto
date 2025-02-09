@@ -162,7 +162,7 @@ onMounted(async () => {
 
     echo.channel('crypto-trades')
         .listen('.bitcoin.trade.updated', (data) => {
-            const tradePeriod = data.trade.period * 1000; // ✅ Période alignée avec la DB
+            const tradePeriod = data.trade.period * 1000;
             const tradePrice = parseFloat(data.trade.price);
 
             const lastCandleIndex = candles.value.findIndex(c => c.x === tradePeriod);
