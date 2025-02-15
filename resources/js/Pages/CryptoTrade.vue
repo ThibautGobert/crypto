@@ -26,7 +26,7 @@ const page = usePage()
 const env = computed(() => page.props.env)
 
 const loadCandles = async () => {
-    const response = await axios.get(env.value.APP_PRODUCTION_URL + '/crypto-trade/candles', {
+    const response = await axios.get(env.value.APP_PRODUCTION_URL + '/candles', {
         params: { cryptoType: 1, interval: 15 }
     });
 
