@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::group(['prefix' => 'crypto-trade', 'as' => 'crypto-trade.'], function () {
-    Route::get('/', [CryptoTradeController::class, 'index'])->name('index');
+Route::group(['prefix' => 'crypto', 'as' => 'crypto.'], function () {
+    Route::get('/{crypto}', [CryptoTradeController::class, 'index'])->name('index');
     Route::get('/candles/{cryptoType?}', [CryptoTradeController::class, 'getCandles'])->name('getCandles');
 });

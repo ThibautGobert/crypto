@@ -15,14 +15,16 @@ class CryptoTradeController extends Controller
         protected CryptoTradeRepository $cryptoTradeRepository
     ) {}
 
-    public function index(Request $request)
+    public function index(Request $request, string $crypto)
     {
         return Inertia::render('CryptoTrade', [
-
+            'cryptoType' => CryptoType::fromURL($crypto)?->value,
+            'interval' => $request->input('interval') ?? 15,
+            'displayClock' => $request->input('displayClock') ?? true,
         ]);
     }
 
-    public function getCandles(Request $request, ?int $cryptoType = CryptoType::BTC->value): JsonResponse
+    public function getCandles(Request $request, ?int $cryptoType = CryptoType::BTC_USDT->value): JsonResponse
     {
         $interval = $request->query('interval') ?? 15;
         $cryptoType = CryptoType::from($cryptoType);

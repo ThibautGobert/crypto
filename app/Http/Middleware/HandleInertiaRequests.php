@@ -34,6 +34,10 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'env' => [
+                'APP_URL' => config('app.url'),
+                'APP_PRODUCTION_URL' => config('app.production_url'),
+            ]
         ];
     }
 }

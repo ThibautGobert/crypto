@@ -30,19 +30,16 @@ class BinanceWebSocketService
                     $timestamp = now();
                     $maker = $data['m']; // true = sell, false = buy
 
-                    // ✅ Stocker en base de données
                     $trade = CryptoTrade::create([
-                        'crypto_type' => CryptoType::BTC,
+                        'crypto_type' => CryptoType::BTC_USDT,
                         'price' => $price,
                         'quantity' => $quantity,
                         'maker' => $maker,
                         'timestamp' => $timestamp
                     ]);
 
-                    // ✅ Diffuser en temps réel via Laravel Reverb
-                   // BitcoinTradeUpdated::dispatch($trade);
                     broadcast(new BitcoinTradeUpdated($trade));
-                    //Broadcast::broadcast([new Channel('crypto-trades')], ''new BitcoinTradeUpdated($trade));
+                   // Broadcast::broadcast([new Channel('crypto-trades')], ''new BitcoinTradeUpdated($trade));
 
                     Log::info("💰 Nouveau Trade : {$price} USDT pour {$quantity} BTC");
                 }
@@ -53,5 +50,4 @@ class BinanceWebSocketService
             Log::error("❌ Erreur WebSocket Binance : " . $e->getMessage());
         }
     }
-
 }

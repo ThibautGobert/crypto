@@ -9,6 +9,13 @@ enum CryptoType: int
 {
     use EnumTrait;
 
-    #[Description('BitCoin')]
-    case BTC = 1;
+    #[Description('BTC/USDT')]
+    case BTC_USDT = 1;
+
+    public static function fromURL(string $description): self
+    {
+        return match (mb_strtoupper($description)) {
+            'BTC-USDT' => self::BTC_USDT,
+        };
+    }
 }
