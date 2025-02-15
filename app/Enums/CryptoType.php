@@ -16,6 +16,7 @@ enum CryptoType: int
     {
         return match (mb_strtoupper($description)) {
             'BTC-USDT', 'btc-usdt' => self::BTC_USDT,
+            default => self::BTC_USDT,
         };
     }
 }
