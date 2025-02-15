@@ -15,7 +15,7 @@ enum CryptoType: int
     public static function fromURL(string $description): self
     {
         return match (mb_strtoupper($description)) {
-            'BTC-USDT' => self::BTC_USDT,
+            'BTC-USDT', 'btc-usdt' => self::BTC_USDT,
         };
     }
 }
