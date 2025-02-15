@@ -29,5 +29,5 @@ require __DIR__.'/auth.php';
 
 Route::group(['prefix' => 'crypto', 'as' => 'crypto.'], function () {
     Route::get('/{crypto}', [CryptoTradeController::class, 'index'])->name('index');
-    Route::get('/candles/{cryptoType?}', [CryptoTradeController::class, 'getCandles'])->name('getCandles');
+    Route::post('/candles/{cryptoType?}', [CryptoTradeController::class, 'getCandles'])->name('getCandles');
 });

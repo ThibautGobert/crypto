@@ -32,8 +32,8 @@ const loadCandles = async () => {
     });
 
      */
-    const response = await axios.get( '/crypto/candles', {
-        params: { cryptoType: 1, interval: 15 }
+    const response = await axios.post( '/crypto/candles', {
+        cryptoType: 1, interval: 15
     });
 
     return response.data.map(c => ({
