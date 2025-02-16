@@ -103,7 +103,7 @@ const updateRocketPosition = () => {
     rotation = Math.max(Math.min(rotation, 120), -45);
 
     gsap.to(rocketEl, {
-        duration: 1.5,
+        duration: 2.5,
         ease: Sine.easeInOut,
         x: posX + (rocketWidth / 2),
         y: posY - (rocketHeight / 2),
