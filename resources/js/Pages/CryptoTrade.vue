@@ -8,7 +8,7 @@ import axios from 'axios';
 import CurrentDateTime from '@/Components/CurrentDateTime.vue';
 import { usePage } from '@inertiajs/vue3';
 import Rocket from '@/Components/Rocket.vue';
-import {gsap} from 'gsap'
+import { gsap, Sine } from 'gsap';
 
 // 🛠️ Enregistrer les composants de Chart.js
 Chart.register(CandlestickController, CandlestickElement );
@@ -83,8 +83,8 @@ const updateRocketPosition = () => {
 
     // Calculer un ratio t basé sur le prix actuel dans la plage [bougie basse, bougie haute]
     // t = 0 si currentPrice vaut le prix le plus bas, t = 1 si currentPrice vaut le prix le plus haut
-    let t = (currentPriceRealTime.value - lastCandle.l) / (lastCandle.h - lastCandle.l);
-    t = Math.max(0, Math.min(t, 1)); // Clamp entre 0 et 1
+    //let t = (currentPriceRealTime.value - lastCandle.l) / (lastCandle.h - lastCandle.l);
+    //t = Math.max(0, Math.min(t, 1)); // Clamp entre 0 et 1
 
     // Interpoler la position Y
     // Attention : sur le canvas, une valeur Y plus petite correspond à une position plus haute.
@@ -103,11 +103,12 @@ const updateRocketPosition = () => {
     rotation = Math.max(Math.min(rotation, 120), -45);
 
     gsap.to(rocketEl, {
-        duration: 0.2,
-        ease: 'power1.in',
-        x: posX + rocketWidth / 2,
-        y: posY - rocketHeight / 2,
-        rotation: rotation
+        duration: 1.5,
+        ease: Sine.easeInOut,
+        x: posX + (rocketWidth / 2),
+        y: posY - (rocketHeight / 2),
+        rotation: rotation,
+        overwrite: 'auto'
     });
 }
 

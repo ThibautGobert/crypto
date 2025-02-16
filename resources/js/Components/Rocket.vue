@@ -6,7 +6,7 @@ const random = (min, max) => {
     return (direction = 1) => (min + delta * Math.random()) * direction;
 }
 const rocket = ref(null)
-const fire = ref({})
+const fire = ref(null)
 const randomAngle = random(-5, 5)
 const randomTime = random(3, 5)
 const randomTime2 = random(5, 10)
@@ -25,6 +25,16 @@ onMounted(()=> {
     moveX(el, 5);
     moveY(el, -5);
     rotate(el, 3);
+    gsap.fromTo(fire.value,
+        { scale: 0.9 },
+        {
+            scale: 1.05,
+            duration: 1,    // durée de l'animation
+            repeat: -1,       // répétition infinie
+            yoyo: true,       // va et vient
+            ease: Sine.easeInOut // easing pour une transition fluide
+        }
+    );
 })
 
 const  moveX = (target, direction) => {
