@@ -82,6 +82,7 @@ const updateRocketPosition = () => {
     // On récupère la position en pixels du haut et du bas de la bougie
     const candleHighY = yScale.getPixelForValue(lastCandle.h);
     const candleLowY = yScale.getPixelForValue(lastCandle.l);
+    const posY = yScale.getPixelForValue(currentPrice.value);
 
     // Calculer un ratio t basé sur le prix actuel dans la plage [bougie basse, bougie haute]
     // t = 0 si currentPrice vaut le prix le plus bas, t = 1 si currentPrice vaut le prix le plus haut
@@ -91,7 +92,7 @@ const updateRocketPosition = () => {
     // Interpoler la position Y
     // Attention : sur le canvas, une valeur Y plus petite correspond à une position plus haute.
     // Ainsi, si t = 0, posY = candleLowY (position basse) et si t = 1, posY = candleHighY (position haute)
-    const posY = candleLowY + (candleHighY - candleLowY) * t;
+    //const posY = candleLowY + (candleHighY - candleLowY) * t;
 
     // Récupérer l'élément DOM réel de la fusée (si la ref est sur un composant, on passe par $el)
     const rocketEl = rocketContainer.value.$el || rocketContainer.value;
@@ -108,7 +109,7 @@ const updateRocketPosition = () => {
         duration: 0.2,
         ease: 'power1.in',
         x: posX + rocketWidth / 2,
-        y: posY - rocketHeight,
+        y: posY - rocketHeight / 2,
         rotation: rotation
     });
 }
