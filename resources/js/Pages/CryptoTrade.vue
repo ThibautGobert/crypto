@@ -24,14 +24,10 @@ let isFullScreen = ref(false)
 let loadingCandles = ref(false)
 const page = usePage()
 const env = computed(() => page.props.env)
+const displayXTicks = computed(() => page.props.displayXTicks === 'true')
+const tooltip = computed(() => page.props.tooltip === 'true')
 
 const loadCandles = async () => {
-    /*
-    const response = await axios.get(env.value.APP_PRODUCTION_URL + '/candles', {
-        params: { cryptoType: 1, interval: 15 }
-    });
-
-     */
     const response = await axios.post( env.value.APP_PRODUCTION_URL + '/api/crypto/candles', {
         cryptoType: 1, interval: 15
     });
@@ -62,6 +58,7 @@ const toggleFullScreen = ()=> {
             isFullScreen.value = true
             console.error("Erreur lors de la sortie du plein écran :", err);
         });
+
 }
 const handleFullscreenChange = ()=> {
     if(!document.fullscreenElement) {
@@ -169,6 +166,7 @@ onMounted(async () => {
 
     chart = new Chart(chartCanvas.value, {
         type: 'candlestick',
+
         data: {
             datasets: [{
                 label: 'BTC/USDT',
@@ -182,10 +180,15 @@ onMounted(async () => {
             }]
         },
         options: {
-           // responsive: true,
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: 2,
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    enabled: tooltip.value
                 },
                 /*
                 lastCandleLines: {
@@ -207,8 +210,9 @@ onMounted(async () => {
                         }
                     },
                     ticks: {
+                        display: displayXTicks.value,
                         major: {
-                            enabled: true,
+                            enabled: false,
                         },
                         color: '#ffffff',
                     },
@@ -244,8 +248,15 @@ onMounted(async () => {
                 }
 
             }
+        },
+        helpers: {
+            canvas: {
+                clipArea: ()=> {},
+                unclipArea: ()=> {},
+            }
         }
     });
+
 
     const echo = new Echo({
         broadcaster: 'reverb',

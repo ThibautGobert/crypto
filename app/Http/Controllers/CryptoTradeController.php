@@ -21,6 +21,8 @@ class CryptoTradeController extends Controller
             'cryptoType' => CryptoType::fromURL($crypto)?->value,
             'interval' => $request->input('interval') ?? 15,
             'displayClock' => $request->input('displayClock') ?? true,
+            'displayXTicks' => $request->input('displayXTicks') ?? true,
+            'tooltip' => $request->input('tooltip') ?? true,
         ]);
     }
 

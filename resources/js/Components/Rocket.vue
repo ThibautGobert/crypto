@@ -18,26 +18,13 @@ onMounted(()=> {
 
     if(!el) return
     gsap.set(el, {
-        x: randomX(-1),
-        y: randomX(1),
-        rotation: randomAngle(-1)
+        x: randomX(-5),
+        y: randomX(5),
+        rotation: randomAngle(-5)
     });
-    moveX(el, 1);
-    moveY(el, -1);
-    rotate(el, 1);
-    /*
-    let fireEl = fire.value
-    if(!fireEl) return
-    gsap.set(fireEl, {
-        x: randomX(-1),
-        y: randomX(1),
-        rotation: randomAngle(-1)
-    });
-    moveX(fireEl, 1);
-    moveY(fireEl, -1);
-    rotate(fireEl, 1);
-
-     */
+    moveX(el, 5);
+    moveY(el, -5);
+    rotate(el, 3);
 })
 
 const  moveX = (target, direction) => {
@@ -64,10 +51,6 @@ const rotate = (target, direction) => {
         onComplete: rotate,
         onCompleteParams: [target, direction * -1]
     });
-}
-
-const handleFire = () => {
-
 }
 
 </script>
