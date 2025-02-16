@@ -326,6 +326,7 @@ onMounted(async () => {
                     v-if="currentPrice"
                     size="3em"
                     use-ease="Quit.easeInOut"
+                    format="00,000.000"
                     stagger
                     :digits="currentPrice"
                     :duration="200"
@@ -338,17 +339,21 @@ onMounted(async () => {
     </div>
 </template>
 
-<style scoped>
-canvas {
-    background-color: #000; /* Fond noir */
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
+<style lang="scss">
+#chart-wrapper {
+    canvas {
+        background-color: #000; /* Fond noir */
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+    }
+    .rocket-container {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+    }
+    .digit-animation-group__col .digit.is-symbol {
+        width: 0.5ch;
+    }
 }
-.rocket-container {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-}
-
 </style>
