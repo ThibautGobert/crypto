@@ -32,7 +32,7 @@ const loadCandles = async () => {
     });
 
      */
-    const response = await axios.post( '/crypto/candles', {
+    const response = await axios.post( env.value.APP_PRODUCTION_URL + '/api/crypto/candles', {
         cryptoType: 1, interval: 15
     });
 
@@ -321,10 +321,10 @@ onMounted(async () => {
         </div>
         <div style="width: 300px;position:absolute;top:0;right: 0;padding-right: 15px;">
             <div :style="{color: currentPriceColor}" style="text-align: right;">
+                <!--     format="00000.00"-->
                 <digit-animation-group
                     v-if="currentPrice"
                     size="3em"
-                    format="00000.00"
                     use-ease="Quit.easeInOut"
                     stagger
                     :digits="currentPrice"
