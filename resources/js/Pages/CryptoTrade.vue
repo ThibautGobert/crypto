@@ -306,8 +306,8 @@ onMounted(async () => {
                         loadingCandles.value = false
                     }, 1500)
                 }
+                updateRocketPosition();
             }
-            updateRocketPosition();
         });
 });
 </script>
