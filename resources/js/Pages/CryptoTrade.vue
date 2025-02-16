@@ -100,7 +100,7 @@ const updateRocketPosition = () => {
     // Ici, on se base sur la différence entre le prix actuel et le prix d'ouverture de la bougie
     const delta = currentPriceRealTime.value - lastCandle.o;
     let rotation = -1.5 * delta;
-    rotation = Math.max(Math.min(rotation, 120), -45);
+    rotation = Math.max(Math.min(rotation, 120), -40);
 
     gsap.to(rocketEl, {
         duration: 2.5,

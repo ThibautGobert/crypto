@@ -26,10 +26,10 @@ onMounted(()=> {
     moveY(el, -5);
     rotate(el, 3);
     gsap.fromTo(fire.value,
-        { scale: 0.9 },
+        { scale: 0.95 },
         {
             scale: 1.05,
-            duration: 1,    // durée de l'animation
+            duration: 0.15,    // durée de l'animation
             repeat: -1,       // répétition infinie
             yoyo: true,       // va et vient
             ease: Sine.easeInOut // easing pour une transition fluide
