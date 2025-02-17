@@ -27,9 +27,17 @@ let moonScale = ref(0)
 let background = ref(null)
 const page = usePage()
 const env = computed(() => page.props.env)
-const displayXTicks = computed(() => page.props.displayXTicks === 'true')
-const tooltip = computed(() => page.props.tooltip === 'true')
+const displayMoon = computed(() => page.props.displayMoon)
+const displayClock = computed(() => page.props.displayClock)
+const displaySpaceship = computed(() => page.props.displaySpaceship)
+const displayXTicks = computed(() => page.props.displayXTicks)
+const tooltip = computed(() => page.props.tooltip)
+const priceSize = computed(() => parseFloat(page.props.priceSize))
+const locale = computed(() => page.props.locale)
 let rocketTween = null
+const loaded = ref(false)
+
+console.log(page.props)
 
 const loadCandles = async () => {
     const response = await axios.post( env.value.APP_PRODUCTION_URL + '/api/crypto/candles', {
@@ -81,8 +89,8 @@ const updateRocketPosition = () => {
 
     // Calcul de la position verticale sur la bougie :
     // On récupère la position en pixels du haut et du bas de la bougie
-    const candleHighY = yScale.getPixelForValue(lastCandle.h);
-    const candleLowY = yScale.getPixelForValue(lastCandle.l);
+    //const candleHighY = yScale.getPixelForValue(lastCandle.h);
+    //const candleLowY = yScale.getPixelForValue(lastCandle.l);
     const posY = yScale.getPixelForValue(currentPrice.value);
 
     // Calculer un ratio t basé sur le prix actuel dans la plage [bougie basse, bougie haute]
@@ -131,17 +139,6 @@ const updateMoonScale = () => {
     // Mapper cette position à une échelle pour la lune
     // Exemple : de 0.2 (loin) à 1.5 (proche)
     moonScale.value = 0.2 + positionRatio * (1.5 - 0.2);
-    //moonScale.value = parseFloat(moonScale.value) + 0.01
-
-    // Animation fluide avec GSAP
-    /*
-    gsap.to(moonScale, {
-        duration: 1,
-        value: scaleFactor.toFixed(2),
-        ease: Sine.easeInOut
-    });
-
-     */
 };
 
 const updateBackground = () => {
@@ -171,47 +168,7 @@ onMounted(async () => {
     }
 
     candles.value = await loadCandles();
-    /*
-    Chart.register({
-        id: 'lastCandleLines',
-        afterDraw: (chart, args, options) => {
 
-            const ctx = chart.ctx;
-            const xScale = chart.scales.x;
-            const yScale = chart.scales.y;
-
-            // Récupérer la dernière bougie (vérifiez que candles.value est accessible ici)
-            const lastCandle = candles.value[candles.value.length - 1];
-            if (!lastCandle) return;
-            console.log(lastCandle);
-
-            // Utilisez la bonne propriété pour le timestamp (t ou x, selon vos données)
-            const xPixel = xScale.getPixelForValue(lastCandle.x); // ou lastCandle.t si c'est le cas
-            const yPixel = yScale.getPixelForValue(lastCandle.c);
-            console.log(xPixel);
-            console.log(yPixel);
-
-            ctx.save();
-            ctx.strokeStyle = options.color || '#131313';
-            ctx.lineWidth = options.lineWidth || 1;
-
-            // Dessiner la ligne verticale : du haut à du bas de l'axe y
-            ctx.beginPath();
-            ctx.moveTo(xPixel, yPixel);
-            ctx.lineTo(xPixel, yScale.bottom);
-            ctx.stroke();
-
-            // Dessiner la ligne horizontale : de la bougie jusqu'au bord droit de la zone de dessin
-            ctx.beginPath();
-            ctx.moveTo(xPixel, yPixel);
-            ctx.lineTo(chart.chartArea.left, yPixel);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    });
-
-     */
     const customCanvasBackgroundColor = {
         id: 'customCanvasBackgroundColor',
         beforeDraw: (chart, args, options) => {
@@ -313,12 +270,15 @@ onMounted(async () => {
 
             }
         },
+        /*
         helpers: {
             canvas: {
                 clipArea: ()=> {},
                 unclipArea: ()=> {},
             }
         }
+
+         */
     });
 
 
@@ -357,7 +317,6 @@ onMounted(async () => {
 
     echo.channel('crypto-trades')
         .listen('.bitcoin.trade.updated', async (data) => {
-
             if (!loadingCandles.value) {
                 const tradePeriod = data.trade.period * 1000;
                 const tradePrice = parseFloat(data.trade.price);
@@ -383,26 +342,32 @@ onMounted(async () => {
                     }, 1500)
                 }
             }
+            if(!loaded.value) {
+                setTimeout(() => {
+                    loaded.value = true
+                }, 15000)
+            }
         });
+
 });
 </script>
 
 <template>
     <div id="chart-wrapper" style="position:relative;width: 100%;height: 100vh;background-color: black; overflow: hidden">
         <div ref="background" id="background"></div>
-        <moon :scale="moonScale"></moon>
-        <div ref="rocketContainer" class="rocket-container">
+        <moon v-show="loaded && displayMoon" :scale="moonScale"></moon>
+        <div v-show="loaded && displaySpaceship" ref="rocketContainer" class="rocket-container">
             <rocket />
         </div>
         <div v-if="!isFullScreen" style="width: 30px; height: 30px; position: absolute;right: 5px;bottom:5px;cursor:pointer;z-index: 20" @click="toggleFullScreen">
             <svg style="fill: white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M200 32L56 32C42.7 32 32 42.7 32 56l0 144c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l40-40 79 79-79 79L73 295c-6.9-6.9-17.2-8.9-26.2-5.2S32 302.3 32 312l0 144c0 13.3 10.7 24 24 24l144 0c9.7 0 18.5-5.8 22.2-14.8s1.7-19.3-5.2-26.2l-40-40 79-79 79 79-40 40c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8l144 0c13.3 0 24-10.7 24-24l0-144c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2l-40 40-79-79 79-79 40 40c6.9 6.9 17.2 8.9 26.2 5.2s14.8-12.5 14.8-22.2l0-144c0-13.3-10.7-24-24-24L312 32c-9.7 0-18.5 5.8-22.2 14.8s-1.7 19.3 5.2 26.2l40 40-79 79-79-79 40-40c6.9-6.9 8.9-17.2 5.2-26.2S209.7 32 200 32z"/></svg>
         </div>
-        <div style="width: fit-content;position:absolute;top:0;left: 50%;transform: translateX(-50%); text-align: center;  z-index: 2;">
+        <div id="price-wrapper">
             <div :style="{color: currentPriceColor}" style="text-align: left;">
                 <!--     format="00000.00"-->
                 <digit-animation-group
                     v-if="currentPrice"
-                    size="3em"
+                    :size="priceSize+'rem'"
                     use-ease="Quit.easeInOut"
                     format="00,000.000"
                     stagger
@@ -410,7 +375,7 @@ onMounted(async () => {
                     :duration="200"
                 />
             </div>
-            <current-date-time style="color: white;position: relative;margin-top: 15px;"></current-date-time>
+            <current-date-time v-if="displayClock" :locale="locale" style="color: white;position: relative;margin-top: 5px;"></current-date-time>
         </div>
 
         <canvas ref="chartCanvas" style="width: 100%; height: 100%"></canvas>
@@ -446,6 +411,15 @@ onMounted(async () => {
         background-image: url("/resources/images/nebula.jpg");
         background-size: cover;
         opacity: 0.3;
+    }
+    #price-wrapper {
+        width: fit-content;
+        position:absolute;
+        top:0;
+        left: 50%;
+        transform: translateX(calc(-50%));
+        text-align: center;
+        z-index: 2;
     }
 }
 </style>

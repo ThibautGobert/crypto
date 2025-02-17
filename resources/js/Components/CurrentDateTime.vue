@@ -1,7 +1,28 @@
 <script setup>
 import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
+import { fr, enUS, de } from 'date-fns/locale'
+
+const props = defineProps({
+    locale: {
+        required: true,
+        type: String
+    }
+})
+
+console.log(props.locale)
+
+const getLang = () => {
+    switch (props.locale) {
+        case 'fr':
+            return fr
+        case 'en':
+            return enUS
+        case 'de':
+            return de
+        default: return fr
+    }
+}
 
 const now = ref(new Date())
 
@@ -18,7 +39,7 @@ onUnmounted(() => {
 })
 
 const formattedDate = computed(() => {
-    return format(now.value, "PP pp", { locale: fr })
+    return format(now.value, "PP pp", { locale: getLang() })
 })
 </script>
 
