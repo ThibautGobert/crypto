@@ -29,6 +29,7 @@ const page = usePage()
 const env = computed(() => page.props.env)
 const displayXTicks = computed(() => page.props.displayXTicks === 'true')
 const tooltip = computed(() => page.props.tooltip === 'true')
+let rocketTween = null
 
 const loadCandles = async () => {
     const response = await axios.post( env.value.APP_PRODUCTION_URL + '/api/crypto/candles', {
@@ -106,8 +107,8 @@ const updateRocketPosition = () => {
     rotation = Math.max(Math.min(rotation, 120), -40);
 
 
-
-    gsap.to(rocketEl, {
+    if (rocketTween) rocketTween.kill();
+    rocketTween = gsap.to(rocketEl, {
         duration: 2.5,
         ease: Sine.easeInOut,
         x: posX + (rocketWidth / 2),
