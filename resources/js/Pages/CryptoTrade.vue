@@ -24,6 +24,7 @@ let currentPriceColor = ref('black')
 let isFullScreen = ref(false)
 let loadingCandles = ref(false)
 let moonScale = ref(0)
+let background = ref(null)
 const page = usePage()
 const env = computed(() => page.props.env)
 const displayXTicks = computed(() => page.props.displayXTicks === 'true')
@@ -142,8 +143,24 @@ const updateMoonScale = () => {
      */
 };
 
+const updateBackground = () => {
+    if(!background.value) return
+
+    gsap.fromTo(background.value,
+        { opacity: 0.05 },
+        {
+            opacity: 0.3,
+            duration: 10,
+            repeat: -1,
+            yoyo: true,
+            ease: Sine.easeInOut
+        }
+    );
+}
+
 onMounted(async () => {
     await nextTick();
+    updateBackground()
     const element = document.getElementById("chart-wrapper")
     element.addEventListener('fullscreenchange', handleFullscreenChange)
 
@@ -372,6 +389,7 @@ onMounted(async () => {
 
 <template>
     <div id="chart-wrapper" style="position:relative;width: 100%;height: 100vh;background-color: black; overflow: hidden">
+        <div ref="background" id="background"></div>
         <moon :scale="moonScale"></moon>
         <div ref="rocketContainer" class="rocket-container">
             <rocket />
@@ -417,6 +435,17 @@ onMounted(async () => {
     }
     .digit-animation-group__col .digit.is-symbol {
         width: 0.5ch;
+    }
+    #background {
+        z-index: -0;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-image: url("/resources/images/nebula.jpg");
+        background-size: cover;
+        opacity: 0.3;
     }
 }
 </style>
