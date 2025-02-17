@@ -147,7 +147,7 @@ const updateBackground = () => {
     if(!background.value) return
 
     gsap.fromTo(background.value,
-        { opacity: 0.09 },
+        { opacity: 0.15 },
         {
             opacity: 0.3,
             duration: 10,
