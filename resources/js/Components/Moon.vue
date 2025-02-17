@@ -206,7 +206,7 @@ watch(
 <style scoped lang="scss">
 #moon-wrapper {
     z-index: 1;
-    width: 1200px;
+    width: 70vw;
     position: absolute;
     right: 0;
     transform: translate(50%, -50%);
