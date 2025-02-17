@@ -338,6 +338,8 @@ onMounted(async () => {
         if (!updateTimeout) {
             updateTimeout = setTimeout(() => {
                 updateTimeout = null;
+                updateRocketPosition();
+                updateMoonScale()
                 if (candles.value.length > 0) {
                     let lastPrice = currentPrice.value
                     currentPrice.value =  candles.value[candles.value.length - 1].c
@@ -348,7 +350,6 @@ onMounted(async () => {
                     } else {
                         currentPriceColor.value = 'white'
                     }
-
                 }
             }, 1500)
         }
@@ -381,8 +382,6 @@ onMounted(async () => {
                         loadingCandles.value = false
                     }, 1500)
                 }
-                updateRocketPosition();
-                updateMoonScale()
             }
         });
 });
