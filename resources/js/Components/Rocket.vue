@@ -113,6 +113,8 @@ const rotate = (target, direction) => {
     #rocket {
         position: relative;
         z-index: 10;
+        //stroke: yellow;
+        //stroke-width: 10px;
     }
     .fire {
         z-index: 5;
