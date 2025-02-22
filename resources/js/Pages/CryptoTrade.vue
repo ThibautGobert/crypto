@@ -35,6 +35,7 @@ const tooltip = computed(() => page.props.tooltip)
 const priceSize = computed(() => parseFloat(page.props.priceSize))
 const locale = computed(() => page.props.locale)
 const hold = computed(() => page.props.hold)
+const holdSentence = computed(() => page.props.holdSentence)
 let holdValue = ref(0)
 let rocketTween = null
 const loaded = ref(false)
@@ -382,8 +383,8 @@ onMounted(async () => {
             </div>
             <current-date-time v-if="displayClock" :locale="locale" style="color: white;position: relative;margin-top: 5px;"></current-date-time>
         </div>
-        <div v-if="hold" id="hold" :style="{bottom: displayXTicks ? '20px' : '0'}">
-            <div>I keep holding {{hold}} BTC, currently worth</div>
+        <div v-if="hold && holdValue" id="hold" :style="{bottom: displayXTicks ? '20px' : '0'}">
+            <div>{{holdSentence}} {{hold}} BTC, currently worth</div>
             <div class="value-wrapper" :style="{color: currentPriceColor}">
                 <div class="currency">
                     $
@@ -392,7 +393,7 @@ onMounted(async () => {
                     v-if="holdValue"
                     size="0.8rem"
                     use-ease="Quit.easeInOut"
-                    format="00,000.000"
+                    format="00,000.00"
                     stagger
                     :digits="holdValue"
                     :duration="200"
