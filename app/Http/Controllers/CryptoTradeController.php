@@ -27,6 +27,7 @@ class CryptoTradeController extends Controller
             'tooltip' => $request->input('tooltip') ?? false,
             'priceSize' => $request->input('priceSize') ?? 2,
             'locale' => $request->input('locale') ?? 'fr',
+            'hold' => $request->input('hold') ?? null,
         ]);
     }
 
